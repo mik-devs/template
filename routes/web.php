@@ -10,24 +10,25 @@ use App\Http\Controllers\ColorSchemeController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
 Route::get('dark-mode-switcher', [DarkModeController::class, 'switch'])->name('dark-mode-switcher');
 Route::get('color-scheme-switcher/{color_scheme}', [ColorSchemeController::class, 'switch'])->name('color-scheme-switcher');
 
-Route::controller(AuthController::class)->middleware('loggedin')->group(function() {
+// ── GUEST ONLY ────────────────────────────────────────────────────────────
+Route::controller(AuthController::class)->middleware('loggedin')->group(function () {
     Route::get('login', 'loginView')->name('login.index');
     Route::post('login', 'login')->name('login.check');
+
+    Route::get('register', 'showRegister')->name('register');
+    Route::post('register', 'register')->name('register.store');
 });
 
-Route::middleware('auth')->group(function() {
+// ── AUTHENTICATED ONLY ───────────────────────────────────────────────────
+Route::middleware('auth')->group(function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::controller(PageController::class)->group(function() {
+
+    Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard-overview-1');
         Route::get('dashboard-overview-2-page', 'dashboardOverview2')->name('dashboard-overview-2');
         Route::get('dashboard-overview-3-page', 'dashboardOverview3')->name('dashboard-overview-3');
@@ -68,8 +69,11 @@ Route::middleware('auth')->group(function() {
         Route::get('faq-layout-1-page', 'faqLayout1')->name('faq-layout-1');
         Route::get('faq-layout-2-page', 'faqLayout2')->name('faq-layout-2');
         Route::get('faq-layout-3-page', 'faqLayout3')->name('faq-layout-3');
-        Route::get('login-page', 'login')->name('login');
-        Route::get('register-page', 'register')->name('register');
+
+        // ── Tinanggal: Route::get('register-page', 'register')->name('register'); ──
+        // (nailipat na sa loggedin group sa itaas)
+
+        Route::get('login-page', 'login')->name('login');  // demo page preview — iwan muna
         Route::get('error-page-page', 'errorPage')->name('error-page');
         Route::get('update-profile-page', 'updateProfile')->name('update-profile');
         Route::get('change-password-page', 'changePassword')->name('change-password');
